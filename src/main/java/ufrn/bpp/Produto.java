@@ -27,4 +27,9 @@ public class Produto {
         return preco;
     }
 
+    @Override
+    public String toString() {
+        return String.format("ID - %d\nNome: %s\nPreço: %.2f",
+                getId(), getName(), getPreco());
+    }
 }
