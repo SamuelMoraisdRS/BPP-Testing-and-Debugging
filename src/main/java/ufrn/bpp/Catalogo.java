@@ -1,19 +1,19 @@
 package ufrn.bpp;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 public class Catalogo {
-    private HashMap<Integer, Produto> catalogo;
+    private final HashMap<Integer, Produto> catalogo = new HashMap<>();
 
+    public Catalogo() {}
     public Produto buscarProdutoPorId(Integer id) {
         return catalogo.get(id);
     }
 
     public List<Produto> listarProdutos() {
-        return new ArrayList<Produto>(catalogo.values()) ;
+        return new ArrayList<>(catalogo.values()) ;
     }
 
     public void adicionarProduto(Produto produto) {
