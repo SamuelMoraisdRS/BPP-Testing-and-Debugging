@@ -1,6 +1,10 @@
 package ufrn.bpp;
 
+import java.util.logging.Logger;
+
 public class Produto {
+    private static final Logger LOGGER = Logger.getLogger(Produto.class.getName());
+
     private final Integer id;
     private String nome;
     private Double preco;
