@@ -2,27 +2,34 @@ package ufrn.bpp;
 
 
 import java.util.*;
-import java.util.function.Function;
+
+
+import java.util.logging.Logger;
 
 import static java.lang.Integer.parseInt;
 
 public class CLI {
 
+    private static final Logger LOGGER = Logger.getLogger(CLI.class.getName());
+
     enum Estado {
-        MENU,
         LISTAR_PRODUTOS,
         BUSCAR_PRODUTOS,
         ADICIONAR_PRODUTOS,
         REALIZAR_PEDIDO,
         LISTAR_PEDIDOS,
-        ENCERRAR
+        ADICIONAR_PRODUTO_A_PEDIDO,
+        ENCERRAR,
+        MENU
     }
 
-    private final String STRING_MENU = "CATALOGO:\n1 - Ver todos os produtos  2 - Buscar Produto  3 - Adicionar Produto   4 - Realizar Pedido  5 - Listar Pedidos  6 - Encerrar";
+    private final Catalogo catalogo = new Catalogo();
+
+    private final String STRING_MENU = "CATALOGO:\n0 - Ver todos os produtos  1 - Buscar Produto  2 - Adicionar Produto ao catalogo   3 - Realizar Pedido  4 - Listar Pedidos 5 - Adicionar produto ao pedido 6 - Encerrar";
 
     public Estado estadoAtual = Estado.MENU;
 
-    public final LinkedList<Pedido> pedidos = new LinkedList<>();
+    public final HashMap<Integer,Pedido> pedidos = new HashMap<>();
 
     public CLI() {
     }
@@ -38,21 +45,24 @@ public class CLI {
     }
 
     public void adicionarPedidoALista(Pedido pedido) {
-        pedidos.push(pedido);
+        pedidos.put(pedido.getId(), pedido);
     }
 
     public void listarPedidos() {
         System.out.println("Pedidos");
-        for (Pedido pedido : pedidos) {
-            System.out.printf("==\n%s\n==\n", pedido.toString());
+        for (Pedido pedido : pedidos.values()) {
+            System.out.printf("==\n%s\n==\n", pedido);
         }
+    }
+
+    public Pedido buscarPedido(Integer id) {
+        return pedidos.get(id);
     }
 
     public static void main(String[] args) {
         CLI cli = new CLI();
         Catalogo catalogo = new Catalogo();
 
-        // TODO: Vamos substituir por mocking
         Produto p1 = new Produto(1, "Caneta Azul", 2.50);
         Produto p2 = new Produto(2, "Caneta Preta", 3.50);
         Produto p3 = new Produto(3, "Caneta Vermelha", 2.00);
@@ -88,6 +98,8 @@ public class CLI {
                         cli.estadoAtual = Estado.MENU;
                     }
                     case REALIZAR_PEDIDO -> {
+                        System.out.println("Insira o id do pedido:");
+                        Integer id = Integer.parseInt(scanner.nextLine());
                         System.out.println("Insira o nome do cliente:");
                         String nome = scanner.nextLine();
                         System.out.println("Insira os IDs dos itens que deseja pedir:");
@@ -96,13 +108,22 @@ public class CLI {
                         List<Produto> listaDeProdutos = Arrays.stream(stringDeIds.split("[ ,]+")).
                                 map(Integer::parseInt).map(catalogo::buscarProdutoPorId).
                                 toList();
-                        Pedido novoPedido = new Pedido(nome, listaDeProdutos);
+                        Pedido novoPedido = new Pedido(id,nome, listaDeProdutos);
                         cli.adicionarPedidoALista(novoPedido);
                         cli.estadoAtual = Estado.LISTAR_PEDIDOS;
                     }
                     case LISTAR_PEDIDOS -> {
                         cli.listarPedidos();
                         cli.estadoAtual = Estado.MENU;
+                    }
+                    case ADICIONAR_PRODUTO_A_PEDIDO -> {
+                        System.out.println("Insira o id do pedido:");
+                        Integer idPedido = Integer.parseInt(scanner.nextLine());
+                        System.out.println("Insira o id do produto:");
+                        Integer idProduto = Integer.parseInt(scanner.nextLine());
+                        Produto produto = catalogo.buscarProdutoPorId(idProduto);
+                        cli.buscarPedido(idPedido).adicionarProduto(produto);
+                        cli.estadoAtual = Estado.LISTAR_PEDIDOS;
                     }
                     case ENCERRAR -> {
                         System.out.println("**ENCERRANDO APLICAÇÃO**");
