@@ -12,7 +12,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class CatalogoUnitTest {
-    CatalogoInterface catalogo = new Catalogo();
+    Catalogo catalogo = new Catalogo();
 
     @Mock
     static Produto produto_1 = mock(Produto.class);
